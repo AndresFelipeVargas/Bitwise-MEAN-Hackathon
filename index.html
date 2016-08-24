@@ -6,19 +6,26 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.5.6/angular.min.js"></script>
 </head>
 <body ng-app="superCoolApp">
-    <div>
-        <span>Points</span>
-        <span>Name</span>
-    </div>
     <div ng-controller="mainCtrl">
-        <div ng-repeat="feature in featureList"> <!--Using ng-repeat to fill in the html with data from the $scope-->
+        <div>
+            <span ng-click="sortFeatures('points')">Points</span>
+            <span ng-click="sortFeatures('name')">Name</span>
+        </div>
+        <div ng-repeat="feature in featureList | orderBy: sortBy : reverseSort"> <!--Using ng-repeat to fill in the html with data from the $scope-->
             <span>{{feature.points}}</span>
             <span>{{feature.featureName}}</span>
             <span><button ng-click="upVote(feature)" style="color: green"><b>up vote</b></button></span>
             <span><button ng-click="downVote(feature)" style="color: red"><b>down vote</b></button></span>
             <span><button ng-hide="showBox" ng-click="showBox = true" style="color: blue"><b>comment</b></button></span>
             <span><input ng-show="showBox" ng-model="comment"></span>
-            <span><button ng-show="showBox" ng-click="pushComment(feature, comment);">Submit Comment</button></span>
+            <span><button ng-show="showBox" ng-click="addComment(feature, comment);">Submit Comment</button></span>
+            <div>
+                <ul>
+                    <li ng-repeat="comment in feature.comments"> <!--ng-repeat used in order to display the comments dynamically-->
+                        {{comment}}
+                    </li>
+                </ul>
+            </div>
 
         </div>
     </div>

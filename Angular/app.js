@@ -35,6 +35,24 @@ myApp.controller("mainCtrl", function($scope){
         }
     ];
 
+    //Variables and function used for sorting the data
+    $scope.sortBy = "name";
+    $scope.reverseSort = false;
+
+    $scope.sortFeatures = function(sortType){
+        if($scope.sortBy === sortType){ // This if statement is to check if the list needs to be reversed
+            $scope.reverseSort = !$scope.reverseSort;
+        } else{
+            $scope.sortBy = sortType;
+
+            if(sortType === "points"){ // This is done in order to display the higher points first by default
+                $scope.reverseSort = true;
+            } else {
+                $scope.reverseSort = false;
+            }
+        }
+    };
+
     $scope.upVote = function(feature){
         feature.points += 1;
     };
@@ -43,9 +61,9 @@ myApp.controller("mainCtrl", function($scope){
         feature.points -= 1;
     };
 
-    $scope.pushComment = function (feature, comment) {
+    $scope.addComment = function (feature, comment) {
         feature.comments.push(comment);
         this.showBox = false;
-        this.message = null;
+        this.comment = null;
     }
 });
