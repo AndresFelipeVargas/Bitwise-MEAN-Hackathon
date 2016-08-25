@@ -62,7 +62,7 @@ function requestDownVote (id, user, voteSet, callback){
                 $inc: {points: -1}
             }
         );
-        
+
         updateUsersVoted(id, user, db, voteSet, callback);
 
     });

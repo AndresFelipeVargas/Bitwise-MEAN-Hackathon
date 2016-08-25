@@ -1,0 +1,22 @@
+{
+  "name": "bitwisemeanhackathon",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "express": "^4.14.0",
+    "mongodb": "^2.2.8",
+    "body-parser": "^1.15.2"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "node ./Express/app.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://golcarfel@bitbucket.org/golcarfel/bitwise-mean-hackathon.git"
+  },
+  "author": "Andres Felipe Vargas",
+  "license": "ISC",
+  "homepage": "https://github.com/AndresFelipeVargas/Bitwise-MEAN-Hackathon/blob/master/README.md"
+}

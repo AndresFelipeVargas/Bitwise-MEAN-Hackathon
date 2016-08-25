@@ -2,7 +2,7 @@ var myApp = angular.module("superCoolApp", []);
 
 myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
     //Dummy user
-    $scope.user = "otherTestUser";
+    $scope.user = "defaultUser";
 
     //Sets the appropriate vote status for the features. This is to set the default up/down vote for the UI.
     function grabVoteStatus(featureList){

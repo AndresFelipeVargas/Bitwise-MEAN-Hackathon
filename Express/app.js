@@ -8,7 +8,7 @@ var dbFeatureRequest = require("../MongoDB/featureRequest");
 app.use(bodyParser.json());
 
 //Used to serve the index.html file at the root directory
-app.use(express.static("../"));
+app.use(express.static("./"));
 
 // When a request to /features is made, the featuresList data is returned
 app.get("/features", function (request, response) {
