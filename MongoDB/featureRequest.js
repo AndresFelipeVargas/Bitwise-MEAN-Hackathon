@@ -2,9 +2,9 @@ var MongoClient = require("mongodb").MongoClient;
 var ObjectId = require("mongodb").ObjectId;
 var url = "mongodb://127.0.0.1:27017/features"; //URL to the db
 
-function updateUsersVoted(id, user, db, callback){
+function updateUsersVoted(id, user, db, vote, callback){
     var updateUsersVoted = {};
-    updateUsersVoted["usersVoted." + user] = true;
+    updateUsersVoted["usersVoted." + user] = vote;
 
     db.collection("featuresList").updateOne(
         {_id: ObjectId(id)},
@@ -39,9 +39,8 @@ function requestFeatures (callback){
 }
 
 
-function requestUpVote (id, user, callback){
+function requestUpVote (id, user, voteSet, callback){
     MongoClient.connect(url, function(error, db){
-        console.log(user);
         db.collection("featuresList").updateOne(
             {_id: ObjectId(id)},
             {
@@ -49,13 +48,13 @@ function requestUpVote (id, user, callback){
             }
         );
 
-        updateUsersVoted(id, user, db, callback);
+        updateUsersVoted(id, user, db, voteSet, callback);
 
     });
 }
 
 
-function requestDownVote (id, user, callback){
+function requestDownVote (id, user, voteSet, callback){
     MongoClient.connect(url, function(error, db){
         db.collection("featuresList").updateOne(
             {_id: ObjectId(id)},
@@ -63,8 +62,8 @@ function requestDownVote (id, user, callback){
                 $inc: {points: -1}
             }
         );
-
-        updateUsersVoted(id, user, db, callback);
+        
+        updateUsersVoted(id, user, db, voteSet, callback);
 
     });
 }

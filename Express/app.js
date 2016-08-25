@@ -20,14 +20,14 @@ app.get("/features", function (request, response) {
 
 // When a request to /upvote is made, the appropriate data object is increased a point
 app.post("/upvote/", function (request, response) {
-    dbFeatureRequest.requestUpVote(request.body.id, request.body.user, function(){
+    dbFeatureRequest.requestUpVote(request.body.id, request.body.user, request.body.voteSet, function(){
         response.end();
     });
 });
 
 // When a request to /downvote is made, the appropriate data object is decreased a point
 app.post("/downvote/", function (request, response) {
-    dbFeatureRequest.requestDownVote(request.body.id, request.body.user, function(){
+    dbFeatureRequest.requestDownVote(request.body.id, request.body.user, request.body.voteSet, function(){
         response.end();
     });
 });

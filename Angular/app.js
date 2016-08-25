@@ -4,9 +4,24 @@ myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
     //Dummy user
     $scope.user = "otherTestUser";
 
+    //Sets the appropriate vote status for the features. This is to set the default up/down vote for the UI.
+    function grabVoteStatus(featureList){
+        featureList.forEach(function(feature){
+            if(feature.usersVoted[$scope.user] === "downVote"){
+                feature.styleDown = "downVote";
+                feature.styleUp = "";
+            } else if(feature.usersVoted[$scope.user] === "upVote"){
+                feature.styleDown = "";
+                feature.styleUp = "upVote";
+            }
+        });
+    }
+
     //Grab data from mongoDB
     featureRequestService.getFeaturesRequest(function(dataRecieved){
         $scope.featureList = dataRecieved.data;
+
+        grabVoteStatus( $scope.featureList);
     });
 
     //Refresh the data from the server every 5 seconds
@@ -55,23 +70,43 @@ myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
         }
     };
 
+    // User is allowed a total of one vote. They can either up/down vote or unvote.
+    // If the user unvotes, they are able to revote. The two functions below allows for the
+    // user to unvote and revote, all while updating the db.
+
     $scope.upVote = function(feature){
-        if(feature.usersVoted[$scope.user] === true){
-            alert("Sorry. You can only vote once for a feature!");
+        var voteSet = "";
+        if(feature.usersVoted[$scope.user] === "upVote"){
+            alert("Sorry. You can't up vote this feature again");
         } else {
+            if(feature.usersVoted[$scope.user] === "downVote"){ // This is the user unvoting
+                feature.styleDown = "";
+                feature.usersVoted[$scope.user] = ""; // Set their vote to empty so that they can revote again
+            } else{
+                voteSet = "upVote";
+                feature.styleUp = "upVote";
+                feature.usersVoted[$scope.user] = "upVote";
+            }
             feature.points += 1;
-            feature.usersVoted[$scope.user] = true;
-            featureRequestService.upVoteRequest(feature._id, $scope.user);
+            featureRequestService.upVoteRequest(feature._id, $scope.user, voteSet);
         }
     };
 
     $scope.downVote = function(feature){
-        if(feature.usersVoted[$scope.user] === true){
-            alert("Sorry. You can only vote once for a feature!");
+        var voteSet = "";
+        if(feature.usersVoted[$scope.user] === "downVote"){
+            alert("Sorry. You can't down vote this feature again!");
         } else {
+            if(feature.usersVoted[$scope.user] === "upVote"){ // This is the user unvoting
+                feature.styleUp = "";
+                feature.usersVoted[$scope.user] = ""; // Set their vote to empty so that they can revote again
+            } else{
+                voteSet = "downVote"
+                feature.styleDown = "downVote";
+                feature.usersVoted[$scope.user] = "downVote";
+            }
             feature.points -= 1;
-            feature.usersVoted[$scope.user] = true;
-            featureRequestService.downVoteRequest(feature._id, $scope.user)
+            featureRequestService.downVoteRequest(feature._id, $scope.user, voteSet);
         }
     };
 
@@ -95,12 +130,12 @@ myApp.service("featureRequestService", function ($http) {
         $http.get("http://127.0.0.1:3000/features").then(callback)
     };
 
-    this.upVoteRequest = function (id, user) {
-        $http.post("http://127.0.0.1:3000/upvote", JSON.stringify({id: id, user: user}));
+    this.upVoteRequest = function (id, user, voteSet) {
+        $http.post("http://127.0.0.1:3000/upvote", JSON.stringify({id: id, user: user, voteSet: voteSet}));
     };
 
-    this.downVoteRequest = function (id, user) {
-        $http.post("http://127.0.0.1:3000/downvote", {id: id, user: user});
+    this.downVoteRequest = function (id, user, voteSet) {
+        $http.post("http://127.0.0.1:3000/downvote", {id: id, user: user, voteSet: voteSet});
     };
 
     this.commentRequest = function (id, comment, user) {
