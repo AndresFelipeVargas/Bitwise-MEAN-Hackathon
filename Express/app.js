@@ -8,7 +8,7 @@ var dbFeatureRequest = require("../MongoDB/featureRequest");
 app.use(express.static("../"));
 
 // When a request to /features is made, the featuresList data is returned
-app.use("/features", function (request, response) {
+app.get("/features", function (request, response) {
     dbFeatureRequest.requestFeatures(function (featuresList) {
         response.send(featuresList);
         response.end();
@@ -16,14 +16,14 @@ app.use("/features", function (request, response) {
 });
 
 // When a request to /upvote is made, the appropriate data object is increased a point
-app.use("/upvote/:id/:user", function (request, response) {
+app.post("/upvote/:id/:user", function (request, response) {
     dbFeatureRequest.requestUpVote(request.params.id, request.params.user, function(){
         response.end();
     });
 });
 
 // When a request to /downvote is made, the appropriate data object is decreased a point
-app.use("/downvote/:id/:user", function (request, response) {
+app.post("/downvote/:id/:user", function (request, response) {
     dbFeatureRequest.requestDownVote(request.params.id, request.params.user, function(){
         response.end();
     });
@@ -31,7 +31,7 @@ app.use("/downvote/:id/:user", function (request, response) {
 
 
 // When a request to /comment is made, a comment gets pushed into the appropriate data object
-app.use("/comment/:id/:comment/:user", function (request, response) {
+app.post("/comment/:id/:comment/:user", function (request, response) {
     dbFeatureRequest.requestComment(request.params.id, request.params.comment, request.params.user, function(){
         response.end();
     });

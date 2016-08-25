@@ -96,14 +96,14 @@ myApp.service("featureRequestService", function ($http) {
     };
 
     this.upVoteRequest = function (id, user) {
-        $http.get("http://127.0.0.1:3000/upvote/" + id + "/" + user);
+        $http.post("http://127.0.0.1:3000/upvote/" + id + "/" + user);
     };
 
     this.downVoteRequest = function (id, user) {
-        $http.get("http://127.0.0.1:3000/downvote/" + id + "/" + user);
+        $http.post("http://127.0.0.1:3000/downvote/" + id + "/" + user);
     };
 
     this.commentRequest = function (id, comment, user) {
-        $http.get("http://127.0.0.1:3000/comment/" + id + "/" + comment + "/" + user);
+        $http.post("http://127.0.0.1:3000/comment/" + id + "/" + comment + "/" + user);
     };
 });
