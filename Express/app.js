@@ -1,8 +1,11 @@
 var express = require("express");
 var app = new express();
+var bodyParser = require('body-parser')
 var url = "http://127.0.0.1:3000"; //Localhost
 
 var dbFeatureRequest = require("../MongoDB/featureRequest");
+
+app.use(bodyParser.json());
 
 //Used to serve the index.html file at the root directory
 app.use(express.static("../"));
@@ -16,23 +19,23 @@ app.get("/features", function (request, response) {
 });
 
 // When a request to /upvote is made, the appropriate data object is increased a point
-app.post("/upvote/:id/:user", function (request, response) {
-    dbFeatureRequest.requestUpVote(request.params.id, request.params.user, function(){
+app.post("/upvote/", function (request, response) {
+    dbFeatureRequest.requestUpVote(request.body.id, request.body.user, function(){
         response.end();
     });
 });
 
 // When a request to /downvote is made, the appropriate data object is decreased a point
-app.post("/downvote/:id/:user", function (request, response) {
-    dbFeatureRequest.requestDownVote(request.params.id, request.params.user, function(){
+app.post("/downvote/", function (request, response) {
+    dbFeatureRequest.requestDownVote(request.body.id, request.body.user, function(){
         response.end();
     });
 });
 
 
 // When a request to /comment is made, a comment gets pushed into the appropriate data object
-app.post("/comment/:id/:comment/:user", function (request, response) {
-    dbFeatureRequest.requestComment(request.params.id, request.params.comment, request.params.user, function(){
+app.post("/comment/", function (request, response) {
+    dbFeatureRequest.requestComment(request.body.id, request.body.comment, request.body.user, function(){
         response.end();
     });
 });
