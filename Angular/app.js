@@ -1,6 +1,9 @@
 var myApp = angular.module("superCoolApp", []);
 
 myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
+    //Dummy user
+    $scope.user = "otherTestUser";
+
     //Grab data from mongoDB
     featureRequestService.getFeaturesRequest(function(dataRecieved){
         $scope.featureList = dataRecieved.data;
@@ -18,10 +21,14 @@ myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
                     //If they do, replace the local $scope data with the database's data
                     if (dataObj.points !== scopeObj.points){
                         scopeObj.points = dataObj.points;
-                    } else if(dataObj.comments.length !== scopeObj.comments.length){
+                    }
+
+                    if(dataObj.comments.length !== scopeObj.comments.length){
                         scopeObj.comments = dataObj.comments;
-                    } else if(dataObj.usersCommented.length !== scopeObj.usersCommented.length){
-                        scopeObj.usersCommented = dataObj.usersCommented;
+                    }
+
+                    if(Object.keys(dataObj.usersVoted).length !== Object.keys(scopeObj.usersVoted).length){
+                        scopeObj.usersVoted = dataObj.usersVoted;
                     }
                 }
             } else {
@@ -49,20 +56,36 @@ myApp.controller("mainCtrl", function($scope, $interval, featureRequestService){
     };
 
     $scope.upVote = function(feature){
-        feature.points += 1;
-        featureRequestService.upVoteRequest(feature.featureName);
+        if(feature.usersVoted[$scope.user] === true){
+            alert("Sorry. You can only vote once for a feature!");
+        } else {
+            feature.points += 1;
+            feature.usersVoted[$scope.user] = true;
+            featureRequestService.upVoteRequest(feature._id, $scope.user);
+        }
     };
 
     $scope.downVote = function(feature){
-        feature.points -= 1;
-        featureRequestService.downVoteRequest(feature.featureName)
+        if(feature.usersVoted[$scope.user] === true){
+            alert("Sorry. You can only vote once for a feature!");
+        } else {
+            feature.points -= 1;
+            feature.usersVoted[$scope.user] = true;
+            featureRequestService.downVoteRequest(feature._id, $scope.user)
+        }
     };
 
     $scope.addComment = function (feature, comment) {
-        feature.comments.push(comment);
-        this.commentBoxActice = false;
-        this.comment = null;
-        featureRequestService.commentRequest(feature.featureName, comment);
+        if(comment !== undefined){
+            feature.comments.push({text: comment, user: $scope.user});
+            this.commentBoxActice = false;
+            this.comment = null;
+            featureRequestService.commentRequest(feature._id, comment, $scope.user);
+        } else{
+            this.commentBoxActice = false;
+            alert("Blank comments cannot be submitted!");
+        }
+
     }
 });
 
@@ -72,15 +95,15 @@ myApp.service("featureRequestService", function ($http) {
         $http.get("http://127.0.0.1:3000/features").then(callback)
     };
 
-    this.upVoteRequest = function (name) {
-        $http.get("http://127.0.0.1:3000/upvote/" + name);
+    this.upVoteRequest = function (id, user) {
+        $http.get("http://127.0.0.1:3000/upvote/" + id + "/" + user);
     };
 
-    this.downVoteRequest = function (name) {
-        $http.get("http://127.0.0.1:3000/downvote/" + name);
+    this.downVoteRequest = function (id, user) {
+        $http.get("http://127.0.0.1:3000/downvote/" + id + "/" + user);
     };
 
-    this.commentRequest = function (name, comment) {
-        $http.get("http://127.0.0.1:3000/comment/" + name + "/" + comment);
+    this.commentRequest = function (id, comment, user) {
+        $http.get("http://127.0.0.1:3000/comment/" + id + "/" + comment + "/" + user);
     };
 });

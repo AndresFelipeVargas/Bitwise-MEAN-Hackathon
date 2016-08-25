@@ -16,23 +16,23 @@ app.use("/features", function (request, response) {
 });
 
 // When a request to /upvote is made, the appropriate data object is increased a point
-app.use("/upvote/:name", function (request, response) {
-    dbFeatureRequest.requestUpVote(request.params.name, function(){
+app.use("/upvote/:id/:user", function (request, response) {
+    dbFeatureRequest.requestUpVote(request.params.id, request.params.user, function(){
         response.end();
     });
 });
 
 // When a request to /downvote is made, the appropriate data object is decreased a point
-app.use("/downvote/:name", function (request, response) {
-    dbFeatureRequest.requestDownVote(request.params.name, function(){
+app.use("/downvote/:id/:user", function (request, response) {
+    dbFeatureRequest.requestDownVote(request.params.id, request.params.user, function(){
         response.end();
     });
 });
 
 
 // When a request to /comment is made, a comment gets pushed into the appropriate data object
-app.use("/comment/:name/:comment", function (request, response) {
-    dbFeatureRequest.requestComment(request.params.name, request.params.comment, function(){
+app.use("/comment/:id/:comment/:user", function (request, response) {
+    dbFeatureRequest.requestComment(request.params.id, request.params.comment, request.params.user, function(){
         response.end();
     });
 });

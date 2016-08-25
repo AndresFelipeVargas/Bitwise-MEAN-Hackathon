@@ -1,5 +1,21 @@
 var MongoClient = require("mongodb").MongoClient;
+var ObjectId = require("mongodb").ObjectId;
 var url = "mongodb://127.0.0.1:27017/features"; //URL to the db
+
+function updateUsersVoted(id, user, db, callback){
+    var updateUsersVoted = {};
+    updateUsersVoted["usersVoted." + user] = true;
+
+    db.collection("featuresList").updateOne(
+        {_id: ObjectId(id)},
+        {
+            $set: updateUsersVoted
+        }
+    );
+    db.close();
+    callback();
+}
+
 
 function requestFeatures (callback){
     MongoClient.connect(url, function(error, db){
@@ -7,10 +23,11 @@ function requestFeatures (callback){
         var cursor = db.collection("featuresList").find();
         cursor.forEach(function(data){
             var feature = {
+                "_id": data._id,
                 "featureName": data.featureName,
                 "points": data.points,
                 "comments": data.comments,
-                "usersCommented": data.usersCommented
+                "usersVoted": data.usersVoted
             };
 
             featuresList.push(feature);
@@ -22,40 +39,47 @@ function requestFeatures (callback){
 }
 
 
-function requestUpVote (name, callback){
+function requestUpVote (id, user, callback){
     MongoClient.connect(url, function(error, db){
+        console.log(user);
         db.collection("featuresList").updateOne(
-            {featureName: name},
+            {_id: ObjectId(id)},
             {
-                $inc: {points: 1},
+                $inc: {points: 1}
             }
         );
-        callback();
+
+        updateUsersVoted(id, user, db, callback);
+
     });
 }
 
 
-function requestDownVote (name, callback){
+function requestDownVote (id, user, callback){
     MongoClient.connect(url, function(error, db){
         db.collection("featuresList").updateOne(
-            {featureName: name},
+            {_id: ObjectId(id)},
             {
                 $inc: {points: -1}
             }
         );
-        callback();
+
+        updateUsersVoted(id, user, db, callback);
+
     });
 }
 
 
-function requestComment (name, comment, callback){
+function requestComment (id, comment, user, callback){
     MongoClient.connect(url, function(error, db){
         db.collection("featuresList").updateOne(
-            {featureName: name},
+            {_id: ObjectId(id)},
             {
-                $push: {comments: comment}
+                $push: {comments: {text: comment, user: user}}
             }
         );
+
+        db.close();
         callback();
     });
 }
